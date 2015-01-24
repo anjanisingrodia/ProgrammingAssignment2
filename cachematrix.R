@@ -35,6 +35,16 @@ makeVector <- function(x = numeric()) {
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
+    m <- x$getinverse()
+    emp <- matrix(nrow=nrow(m),ncol=ncol(m))
+    if(!identical(m,emp)) {
+        message("getting cached data")
+        return(m)
+    }
+    data <- x$get()
+    m <- solve(data)
+    x$setinverse(m)
+    m
 }
 
 cachemean <- function(x, ...) {
