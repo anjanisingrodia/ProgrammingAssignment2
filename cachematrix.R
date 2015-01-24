@@ -1,60 +1,39 @@
-## Put comments here that give an overall description of what your
-## functions do
+## The following functions are able to cache time-consuming 
+## computation of matrix inversion particularly in case of 
+## large matrices.
 
-## Write a short comment describing this function
+## This function creates a special 'matrix' object that is
+## basically a list to set the value of a matrix, get the
+## value of the matrix, set the inverse of the matrix to another
+## variable and get the inverse of the matrix.
+## Example: matrixObject <- makeCacheMatrix(matrix(1:4,2,2))
 
-makeCacheMatrix <- function(x = matrix()) {
-    m <- matrix()
-    set <- function(y) {
-        x <<- y
-        m <<- matrix()
+makeCacheMatrix <- function(x = matrix()) { #matrix passed as arg here is the one whose inverse we want to save
+    m <- matrix() #inverse matrix init
+    set <- function(y) { #set the value of matrix using this function
+        x <<- y #The <<- operator here sets the value of x in the parent function
+        m <<- matrix() #m is set to NA matrix of dim = c(1,1)
     }
-    get <- function() x
-    setinverse <- function(inv) m <<- inv
-    getinverse <- function() m
+    get <- function() x #returns the value of matrix
+    setinverse <- function(inv) m <<- inv #saves the value of a computed inverse to m
+    getinverse <- function() m #retrieves the value of saved inverse from cache
     list(set = set, get = get,
          setinverse = setinverse,
-         getinverse = getinverse)
+         getinverse = getinverse) #returns the list of functions
 }
 
-makeVector <- function(x = numeric()) {
-    m <- NULL
-    set <- function(y) {
-        x <<- y
-        m <<- NULL
-    }
-    get <- function() x
-    setmean <- function(mean) m <<- mean
-   getmean <- function() m
-    list(set = set, get = get,
-         setmean = setmean,
-         getmean = getmean)
-}
-
-## Write a short comment describing this function
+## This function returns the inverse of the given matrix and
+## saves it into cache.
 
 cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
-    m <- x$getinverse()
-    emp <- matrix(nrow=nrow(m),ncol=ncol(m))
-    if(!identical(m,emp)) {
+    m <- x$getinverse() # Gets the current value of saved inverse.
+    emp <- matrix(nrow=nrow(m),ncol=ncol(m)) #Initiates an empty matrix with the same dimensions as given matrix
+    if(!identical(m,emp)) { #checks if the saved value of inverse matrix equal to NA matrix of the same size
         message("getting cached data")
-        return(m)
+        return(m) #returns the saved value of inverse
     }
-    data <- x$get()
-    m <- solve(data)
-    x$setinverse(m)
-    m
-}
-
-cachemean <- function(x, ...) {
-    m <- x$getmean()
-    if(!is.null(m)) {
-        message("getting cached data")
-        return(m)
-    }
-    data <- x$get()
-    m <- mean(data, ...)
-    x$setmean(m)
-    m
+    data <- x$get() #gets the given value of matrix
+    m <- solve(data) #computes the inverse of the given matrix 
+    x$setinverse(m) #saves the value of inverse of the matrix to memory
+    m #inverse matrix is returned.
 }
